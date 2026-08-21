@@ -1,0 +1,9 @@
+'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Input from '@/app/components/ui/Input';
+import Button from '@/app/components/ui/Button';
+import Card from '@/app/components/ui/Card';
+import { Lock } from 'lucide-react';
+import { api } from '@/app/lib/client/api';
+export default function ResetPasswordPage(){const [password,setPassword]=useState('');const [confirm,setConfirm]=useState('');const [error,setError]=useState('');const [done,setDone]=useState(false);const router=useRouter();const save=async(e:React.FormEvent)=>{e.preventDefault();setError('');if(password.length<6||password!==confirm){setError('Passwords must match and contain at least 6 characters.');return}try{await api('/api/auth/reset-password/update',{method:'POST',body:JSON.stringify({password})});setDone(true);setTimeout(()=>router.push('/auth/login'),1200)}catch(e){setError(e instanceof Error?e.message:'Unable to update password.')}};return <main className="min-h-screen flex items-center justify-center p-4"><Card variant="premium" className="w-full max-w-md p-8"><h1 className="text-3xl font-bold mb-2">Choose a new password</h1><p className="text-gray-400 mb-6">Set a new password for your WarHex account.</p>{done?<p className="text-emerald-400">Password updated. Redirecting…</p>:<form onSubmit={save} className="space-y-4"><Input type="password" label="New password" value={password} onChange={e=>setPassword(e.target.value)} icon={<Lock className="w-5 h-5"/>} fullWidth required/><Input type="password" label="Confirm password" value={confirm} onChange={e=>setConfirm(e.target.value)} icon={<Lock className="w-5 h-5"/>} fullWidth required/>{error&&<p className="text-red-400 text-sm">{error}</p>}<Button type="submit" variant="primary" fullWidth>Update Password</Button></form>}</Card></main>}

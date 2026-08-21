@@ -1,0 +1,3 @@
+import { NextResponse } from 'next/server';
+import { requireUser, supabaseFetch } from '@/app/lib/server/supabase';
+export async function POST(request: Request){const auth=await requireUser();if(!auth)return NextResponse.json({error:'Reset session expired. Open the reset link again.'},{status:401});const {password}=await request.json();if(String(password).length<6)return NextResponse.json({error:'Password must contain at least 6 characters.'},{status:400});const r=await supabaseFetch('/auth/v1/user',{method:'PUT',body:JSON.stringify({password})},auth.token!);if(!r.ok)return NextResponse.json({error:'Unable to update password.'},{status:400});return NextResponse.json({ok:true});}

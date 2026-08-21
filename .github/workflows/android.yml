@@ -1,0 +1,81 @@
+name: WarHex Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Check Capacitor
+        run: npx cap --version
+
+      - name: Add Android platform
+        shell: bash
+        run: |
+          if [ ! -d "android" ]; then
+            npx cap add android
+          else
+            echo "Android platform already exists."
+          fi
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Prepare Android
+        run: npm run android:prepare
+
+      - name: Make Gradle executable
+        run: chmod +x android/gradlew
+
+      - name: Build debug APK and AAB
+        working-directory: android
+        run: ./gradlew assembleDebug bundleDebug --no-daemon
+
+      - name: Verify APK
+        shell: bash
+        run: |
+          APK="android/app/build/outputs/apk/debug/app-debug.apk"
+          AAB="android/app/build/outputs/bundle/debug/app-debug.aab"
+
+          if [ ! -f "$APK" ] || [ ! -f "$AAB" ]; then
+            echo "ERROR: APK was not generated."
+            exit 1
+          fi
+
+          echo "APK generated successfully:"
+          ls -lh "$APK" "$AAB"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: warhex-online-debug-apk
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/bundle/debug/app-debug.aab
+          if-no-files-found: error
