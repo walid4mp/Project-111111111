@@ -409,7 +409,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
     } catch (e) {
       if (mounted) {
-        setState(() => error = e.toString().replaceFirst('Exception: ', ''));
+        final raw = e.toString();
+        final msg = raw.startsWith('Exception: ') ? raw.substring('Exception: '.length) : raw;
+        setState(() => error = msg);
       }
     } finally {
       if (mounted) setState(() => loading = false);
@@ -431,6 +433,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
           const Text(
             'انضم إلى مجتمع WarHex',
             style: TextStyle(color: Color(0xff9aa5bd)),
+          ),
+          const SizedBox(height: 18),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: const Color(0x147c3aed),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0x447c3aed)),
+            ),
+            child: const Text(
+              'للاختبار: admin1@warhex.test / WarHexAdmin@12345  أو  testuser1@warhex.test / WarHex@12345',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Color(0xffcdb5ff), fontSize: 12),
+            ),
           ),
           const SizedBox(height: 24),
           TextField(

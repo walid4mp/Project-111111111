@@ -19,8 +19,17 @@ export async function POST(request: Request) {
     const response=await supabaseFetch('/auth/v1/signup',{method:'POST',body:JSON.stringify({email,password,data:{username}})});
     const data=await response.json().catch(()=>({}));
     if(!response.ok) {
-      const message=data.msg||data.message||data.error_description||'Unable to create account.';
-      return NextResponse.json({error:message},{status:response.status});
+      const raw=data.msg||data.message||data.error_description||'Unable to create account.';
+      const lower=String(raw).toLowerCase();
+      let message=raw;
+      const status=response.status;
+      if(status===422||lower.includes('already registered')||lower.includes('user already')) message='That email is already registered.';
+      else if(lower.includes('email')&&(lower.includes('invalid')||lower.includes('valid'))) message='Enter a valid email address.';
+      else if(lower.includes('password')&&(lower.includes('short')||lower.includes('character'))) message='Password is too short or weak.';
+      else if(lower.includes('rate')||lower.includes('limit')) message='Too many attempts. Please wait and try again.';
+      else if(lower.includes('signups not allowed')||lower.includes('signup disabled')) message='New signups are disabled on this environment.';
+      else if(lower.includes('invalid path')||lower.includes('not found')||status===404) message='Signup service misconfigured. Contact support.';
+      return NextResponse.json({error:message,status},{status});
     }
     const mobile = request.headers.get('x-warhex-mobile') === '1';
     const out=NextResponse.json(mobile
