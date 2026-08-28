@@ -1,0 +1,4 @@
+import { NextResponse } from 'next/server';
+import { requireUser, supabaseServiceFetch } from '@/app/lib/server/supabase';
+export async function GET(){const r=await supabaseServiceFetch('/rest/v1/voice_rooms?status=eq.live&select=*&order=created_at.desc&limit=50');return NextResponse.json({rooms:r.ok?await r.json():[]});}
+export async function POST(request:Request){const auth=await requireUser();if(!auth)return NextResponse.json({error:'Sign in required.'},{status:401});const b=await request.json().catch(()=>({}));const title=String(b.title||'').trim().slice(0,100);if(!title)return NextResponse.json({error:'Title is required.'},{status:400});const r=await supabaseServiceFetch('/rest/v1/voice_rooms',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({host_id:auth.user.id,title,status:'live'})});if(!r.ok)return NextResponse.json({error:'Unable to create voice room.'},{status:500});return NextResponse.json({room:(await r.json())[0]});}

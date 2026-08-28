@@ -1,0 +1,3 @@
+import { NextResponse } from 'next/server';
+import { supabaseFetch } from '@/app/lib/server/supabase';
+export async function POST(req:Request){try{const {email}=await req.json();if(!email)return NextResponse.json({error:'Email is required.'},{status:400});const r=await supabaseFetch('/auth/v1/otp',{method:'POST',body:JSON.stringify({email:String(email).trim().toLowerCase(),create_user:false})});if(!r.ok)return NextResponse.json({error:'Unable to send verification code.'},{status:400});return NextResponse.json({ok:true});}catch{return NextResponse.json({error:'Unable to send verification code.'},{status:500});}}

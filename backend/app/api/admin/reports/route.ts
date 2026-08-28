@@ -1,0 +1,4 @@
+import { NextResponse } from 'next/server';
+import { requireAdminPermission } from '@/app/lib/server/admin-rbac';
+import { supabaseServiceFetch } from '@/app/lib/server/supabase';
+export async function GET(){const a=await requireAdminPermission('reports');if(!a)return NextResponse.json({error:'Forbidden'},{status:403});const [p,g,l]=await Promise.all([supabaseServiceFetch('/rest/v1/payment_orders?select=amount,status'),supabaseServiceFetch('/rest/v1/game_rooms?select=id,status'),supabaseServiceFetch('/rest/v1/live_rooms?select=id,status')]);const payments=p.ok?await p.json():[];return NextResponse.json({revenue:payments.filter((x:any)=>x.status==='captured').reduce((s:number,x:any)=>s+Number(x.amount||0),0),payments:payments.length,games:g.ok?(await g.json()).length:0,liveRooms:l.ok?(await l.json()).length:0});}

@@ -1,0 +1,30 @@
+{
+  "name": "warhex-admin-panel",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p ${PORT:-10000}",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "next": "16.2.11",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "lucide-react": "^0.468.0",
+    "tailwindcss": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.11",
+    "typescript": "^5",
+    "@tailwindcss/postcss": "^4.1.12"
+  },
+  "engines": {
+    "node": ">=24.0.0 <25.0.0"
+  }
+}

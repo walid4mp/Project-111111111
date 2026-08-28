@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: warhex-backend
+    runtime: node
+    plan: free
+    buildCommand: npm install --no-audit --no-fund && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 24.14.1
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: MASTER_ADMIN_EMAIL
+        sync: false
+      - key: MASTER_ADMIN_PASSWORD
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false

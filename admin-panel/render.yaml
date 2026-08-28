@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: warhex-admin-panel
+    runtime: node
+    plan: free
+    buildCommand: npm install --no-audit --no-fund && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 24.14.1
+      - key: NEXT_PUBLIC_API_URL
+        sync: false

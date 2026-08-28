@@ -1,0 +1,2 @@
+@import "tailwindcss";
+:root{color-scheme:dark}html,body{margin:0;min-height:100%;background:#050816;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif}.glass-effect-strong{background:#0d1326dd;border:1px solid #ffffff12;box-shadow:0 25px 80px #0007;backdrop-filter:blur(18px)}.gradient-text{background:linear-gradient(90deg,#38bdf8,#8b5cf6,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent}

@@ -1,0 +1,4 @@
+import {NextRequest,NextResponse} from 'next/server';
+function cors(req:NextRequest){const origin=req.headers.get('origin')||'';const allowed=(process.env.CORS_ORIGINS||'*').split(',').map(v=>v.trim()).filter(Boolean);const value=allowed.includes('*')?'*':(allowed.includes(origin)?origin:allowed[0]||'*');return {'Access-Control-Allow-Origin':value,'Access-Control-Allow-Methods':'GET,POST,PUT,PATCH,DELETE,OPTIONS','Access-Control-Allow-Headers':'Content-Type, Authorization, X-WarHex-Mobile, X-WarHex-Client','Access-Control-Max-Age':'86400','Vary':'Origin'};}
+export function middleware(req:NextRequest){const h=cors(req);if(req.method==='OPTIONS')return new NextResponse(null,{status:204,headers:h});const r=NextResponse.next();for(const[k,v]of Object.entries(h))r.headers.set(k,v);return r;}
+export const config={matcher:['/api/:path*']};
