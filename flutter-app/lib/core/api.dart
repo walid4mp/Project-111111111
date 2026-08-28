@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -32,8 +33,8 @@ class ApiClient {
           .timeout(const Duration(seconds: 18));
     } on SocketException {
       throw ApiException('تعذّر الاتصال بالخادم. تحقق من الإنترنت أو حاول لاحقًا.');
-    } on HttpClientException {
-      throw ApiException('تعذّر الاتصال بالخادم. تحقق من الإنترنت أو حاول لاحقًا.');
+    } on TimeoutException {
+      throw ApiException('انتهت مهلة الاتصال بالخادم. حاول مرة أخرى.');
     } on http.ClientException {
       throw ApiException(
           'تعذّر الوصول إلى الخادم (${AppConfig.apiBaseUrl}). قد يكون الرابط غير متاح مؤقتًا.');
@@ -64,6 +65,8 @@ class ApiClient {
           .timeout(const Duration(seconds: 18));
     } on SocketException {
       throw ApiException('تعذّر الاتصال بالخادم. تحقق من الإنترنت أو حاول لاحقًا.');
+    } on TimeoutException {
+      throw ApiException('انتهت مهلة الاتصال بالخادم. حاول مرة أخرى.');
     } on http.ClientException {
       throw ApiException(
           'تعذّر الوصول إلى الخادم (${AppConfig.apiBaseUrl}). قد يكون الرابط غير متاح مؤقتًا.');
