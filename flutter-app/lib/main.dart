@@ -55,7 +55,7 @@ class _StartupScreenState extends State<StartupScreen>
   Future<void> boot() async {
     const steps = <({String text, double value})>[
       (text: 'تهيئة الواجهة…', value: .18),
-      (text: 'فحص الاتصال…', value: .38),
+      (text: 'تشغيل الخادم…', value: .38),
       (text: 'تحميل الحساب…', value: .58),
       (text: 'تجهيز الألعاب…', value: .82),
       (text: 'اكتمل التشغيل', value: 1.0),
@@ -67,7 +67,15 @@ class _StartupScreenState extends State<StartupScreen>
         status = step.text;
         progress = step.value;
       });
-      await Future.delayed(const Duration(milliseconds: 420));
+      if (step.value == .38) {
+        try {
+          await ApiClient().get('/api/health');
+        } catch (_) {
+          await Future.delayed(const Duration(milliseconds: 600));
+        }
+      } else {
+        await Future.delayed(const Duration(milliseconds: 420));
+      }
     }
 
     if (mounted) {
@@ -188,6 +196,25 @@ class _LoginScreenState extends State<LoginScreen> {
   String error = '';
 
   @override
+  void initState() {
+    super.initState();
+    _warmServer();
+  }
+
+  Future<void> _warmServer() async {
+    try {
+      await ApiClient().get('/api/health');
+    } catch (_) {}
+  }
+
+  Future<Map<String, dynamic>> _loginRequest() {
+    return ApiClient().post('/api/auth/login', {
+      'email': email.text.trim(),
+      'password': password.text,
+    });
+  }
+
+  @override
   void dispose() {
     email.dispose();
     password.dispose();
@@ -201,10 +228,15 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final data = await ApiClient().post('/api/auth/login', {
-        'email': email.text.trim(),
-        'password': password.text,
-      });
+      Map<String, dynamic> data;
+      try {
+        data = await _loginRequest();
+      } on ApiException catch (e) {
+        final retryable = e.message.contains('تعذّر الاتصال') || e.message.contains('انتهت مهلة');
+        if (!retryable) rethrow;
+        await _warmServer();
+        data = await _loginRequest();
+      }
 
       final prefs = await SharedPreferences.getInstance();
       final accessToken = data['access_token'];

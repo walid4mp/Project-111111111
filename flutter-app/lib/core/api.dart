@@ -30,7 +30,7 @@ class ApiClient {
     try {
       r = await http
           .post(url, headers: await headers(), body: jsonEncode(body))
-          .timeout(const Duration(seconds: 18));
+          .timeout(const Duration(seconds: 75));
     } on SocketException {
       throw ApiException('تعذّر الاتصال بالخادم. تحقق من الإنترنت أو حاول لاحقًا.');
     } on TimeoutException {
@@ -62,7 +62,7 @@ class ApiClient {
     try {
       r = await http
           .get(url, headers: await headers())
-          .timeout(const Duration(seconds: 18));
+          .timeout(const Duration(seconds: 75));
     } on SocketException {
       throw ApiException('تعذّر الاتصال بالخادم. تحقق من الإنترنت أو حاول لاحقًا.');
     } on TimeoutException {
